@@ -22,4 +22,4 @@ export const headerMenu = [
         icon: ShoppingBasket,
         href: PagesConfig.CART
     }
-]
+] as const;

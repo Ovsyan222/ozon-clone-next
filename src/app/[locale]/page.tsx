@@ -1,5 +1,5 @@
-import { Header } from "@/components/layout/Header";
-import { TopMenu } from "@/components/layout/TopMenu";
+import { Header } from "@/components/layout/header/Header";
+import { TopMenu } from "@/components/layout/top-menu/TopMenu";
 import { Slider } from "@/components/pages/home/slider/Slider";
 import Image from "next/image";
 
@@ -14,6 +14,7 @@ export default function Home() {
         width={1407}
         height={94}
         className="mx-auto mt-6 mb-3"
+        draggable={false}
       />
       <Slider/>
     </div>
