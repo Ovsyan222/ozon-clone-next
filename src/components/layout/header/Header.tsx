@@ -1,18 +1,24 @@
 'use client'
 
-import { LayoutGrid, Search } from "lucide-react";
+import { LayoutGrid, Search, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { headerMenu } from "../header/header-menu.data";
 import {useTranslations} from 'next-intl';
-
 import cn from "clsx";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { Auth } from "./Auth";
 
 export function Header() {
 
-      const t = useTranslations('header');
+    const t = useTranslations('header');
+
+    const { isOpen, setIsOpen, ref } = useOutsideClick<HTMLDivElement>(false)
+      
+
 
   return (
+    <>
     <header className="grid grid-cols-[2fr_7fr_2.3fr] gap-7 items-center mt-3 mx-5">
         <div className="flex items-center gap-7">
             <Link href="/">
@@ -47,13 +53,17 @@ export function Header() {
         </div>
 
         <div className="flex gap-5 items-center ml-2 justify-end">
-            {headerMenu.map((item, index) => (
+                <button className={cn("flex items-center flex-col")}
+                    onClick={() => setIsOpen(true)}>
+                    <User size={20} />
+                    <span className="text-sm font-medium">Войти</span>
+                </button>
+            {headerMenu.map((item) => (
                 <Link 
                     key={item.title} 
                     href={item.href}
                     className={cn(
-                    "flex items-center flex-col transition-opacity hover:opacity-100 opacity-50",
-                    index === 0 && 'opacity-100'
+                    "flex items-center flex-col transition-opacity hover:opacity-100 opacity-50"
                     )}
                 >
                     <item.icon size={20} />
@@ -63,5 +73,7 @@ export function Header() {
             ))}
         </div>
     </header>
+    {isOpen && <Auth setIsOpen={setIsOpen} ref={ref} />}
+    </>
   );
 }
