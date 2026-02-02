@@ -8,6 +8,7 @@ import {useTranslations} from 'next-intl';
 import cn from "clsx";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { Auth } from "./Auth";
+import { useSession } from "@/lib/auth-client";
 
 export function Header() {
 
@@ -15,7 +16,7 @@ export function Header() {
 
     const { isOpen, setIsOpen, ref } = useOutsideClick<HTMLDivElement>(false)
       
-
+    const { data, isPending } = useSession();
 
   return (
     <>
@@ -31,8 +32,7 @@ export function Header() {
                 />
             </Link>
             
-            <button className="bg-primary p-2 rounded-md text-white 
-            flex items-center gap-2 font-medium">
+            <button className="bg-primary p-2 rounded-md text-white flex items-center gap-2 font-medium">
                 <LayoutGrid fill="#fff" />
 
                 <span>{t('catalogTitle')}</span>
@@ -53,11 +53,23 @@ export function Header() {
         </div>
 
         <div className="flex gap-5 items-center ml-2 justify-end">
+            {data?.user ? (
+                <Link
+                    href="/profile"
+                    className={cn("flex items-center flex-col")}>
+                    <User size={20} />
+                    <span className="text-sm font-medium">
+                        {data.user.name || data.user.email}
+                    </span>
+                    </Link>
+            ) : (
                 <button className={cn("flex items-center flex-col")}
                     onClick={() => setIsOpen(true)}>
                     <User size={20} />
                     <span className="text-sm font-medium">Войти</span>
                 </button>
+            )}
+                
             {headerMenu.map((item) => (
                 <Link 
                     key={item.title} 

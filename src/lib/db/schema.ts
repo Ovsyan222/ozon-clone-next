@@ -1,9 +1,11 @@
-import { sqliteTable, text, real, integer, int } from 'drizzle-orm/sqlite-core';
+// src/lib/db/schema.ts
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
+// 1. user таблица (обязательные поля для Better Auth)
 export const user = sqliteTable('user', {
     id: text('id').primaryKey(),
-    email: text('email').notNull().unique(),
     name: text('name'),
+    email: text('email').notNull().unique(),
     emailVerified: integer('email_verified', { mode: 'boolean' })
         .notNull()
         .default(false),
@@ -16,23 +18,30 @@ export const user = sqliteTable('user', {
         .$defaultFn(() => Math.floor(Date.now() / 1000)),
 });
 
+// 2. account таблица (важно: accountId вместо providerAccountId)
 export const account = sqliteTable('account', {
     id: text('id').primaryKey(),
+    accountId: text('account_id').notNull(), // ОБЯЗАТЕЛЬНОЕ поле для Better Auth!
+    providerId: text('provider_id').notNull(), // 'email' или 'github' и т.д.
     userId: text('user_id')
         .notNull()
         .references(() => user.id, { onDelete: 'cascade' }),
-    type: text('type').notNull(),
-    provider: text('provider').notNull(),
-    providerAccountId: text('provider_account_id').notNull(),
-    refreshToken: text('refresh_token'),
     accessToken: text('access_token'),
-    expiresAt: integer('expires_at'),
-    tokenType: text('token_type'),
-    scope: text('scope'),
+    refreshToken: text('refresh_token'),
     idToken: text('id_token'),
-    sessionState: text('session_state'),
+    accessTokenExpiresAt: integer('access_token_expires_at'),
+    refreshTokenExpiresAt: integer('refresh_token_expires_at'),
+    scope: text('scope'),
+    password: text('password'), // Для email/password провайдера
+    createdAt: integer('created_at')
+        .notNull()
+        .$defaultFn(() => Math.floor(Date.now() / 1000)),
+    updatedAt: integer('updated_at')
+        .notNull()
+        .$defaultFn(() => Math.floor(Date.now() / 1000)),
 });
 
+// 3. session таблица
 export const session = sqliteTable('session', {
     id: text('id').primaryKey(),
     userId: text('user_id')
@@ -46,20 +55,16 @@ export const session = sqliteTable('session', {
     updatedAt: integer('updated_at')
         .notNull()
         .$defaultFn(() => Math.floor(Date.now() / 1000)),
-    userAgent: text('user_agent'),
     ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
 });
 
-export const review = sqliteTable('review', {
+// 4. verification таблица
+export const verification = sqliteTable('verification', {
     id: text('id').primaryKey(),
-    userId: text('user_id')
-        .notNull()
-        .references(() => user.id, { onDelete: 'cascade' }),
-    productId: text('product_id')
-        .notNull()
-        .references(() => product.id, { onDelete: 'cascade' }),
-    rating: real('rating').notNull(),
-    comment: text('comment'),
+    identifier: text('identifier').notNull(),
+    value: text('value').notNull(),
+    expiresAt: integer('expires_at').notNull(),
     createdAt: integer('created_at')
         .notNull()
         .$defaultFn(() => Math.floor(Date.now() / 1000)),
@@ -68,6 +73,7 @@ export const review = sqliteTable('review', {
         .$defaultFn(() => Math.floor(Date.now() / 1000)),
 });
 
+// 5. Остальные таблицы вашего приложения
 export const product = sqliteTable('product', {
     id: text('id').primaryKey(),
     name: text('name').notNull(),
@@ -113,6 +119,24 @@ export const orderItem = sqliteTable('order_item', {
     quantity: integer('quantity').notNull().default(1),
     price: integer('price').notNull(),
     createdAt: integer('created_at')
+        .notNull()
+        .$defaultFn(() => Math.floor(Date.now() / 1000)),
+});
+
+export const review = sqliteTable('review', {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+        .notNull()
+        .references(() => user.id, { onDelete: 'cascade' }),
+    productId: text('product_id')
+        .notNull()
+        .references(() => product.id, { onDelete: 'cascade' }),
+    rating: integer('rating').notNull(),
+    comment: text('comment'),
+    createdAt: integer('created_at')
+        .notNull()
+        .$defaultFn(() => Math.floor(Date.now() / 1000)),
+    updatedAt: integer('updated_at')
         .notNull()
         .$defaultFn(() => Math.floor(Date.now() / 1000)),
 });

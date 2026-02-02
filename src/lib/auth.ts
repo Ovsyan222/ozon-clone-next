@@ -1,14 +1,24 @@
+// src/lib/auth.ts
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
 
-export const auth = betterAuth({
-    database: drizzleAdapter(db, {
-        provider: 'sqlite',
-    }),
-    emailAndPassword: { enabled: true },
-    trustedOrigins: ['http://localhost:3000'],
-})
+// Проверяем, что db существует и на сервере
+const isServer = typeof window === 'undefined';
 
-export type Session = typeof auth.$Infer.Session.session
-export type User = typeof auth.$Infer.Session.user
+export const auth = betterAuth({
+  database: isServer && db 
+    ? drizzleAdapter(db, {
+        provider: 'sqlite',
+      })
+    : undefined,
+  emailAndPassword: { 
+    enabled: true,
+    requireEmailVerification: false,
+  },
+  secret: process.env.BETTER_AUTH_SECRET || "dev-secret-key-change-in-production",
+  trustedOrigins: ['http://localhost:3000'],
+});
+
+export type Session = typeof auth.$Infer.Session.session;
+export type User = typeof auth.$Infer.Session.user;

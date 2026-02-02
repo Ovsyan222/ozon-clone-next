@@ -10,8 +10,7 @@ export function Slider() {
     const [activeSlideId, setActiveSlideId] = useState(1);
 
     return (
-        <div className="relative flex items-center gap-1 rounded-3xl
-        overflow-hidden">
+        <div className="relative flex items-center gap-1 rounded-3xl overflow-hidden">
             <div className="flex w-full transition-transform duration-500 ease-in-out gap-1"
                 style={{transform: `translateX(-${(activeSlideId - 1) * 100}%)`}}>
                 {SLIDES.map(slide => (
@@ -35,16 +34,14 @@ export function Slider() {
                 <button
                     onClick={() => setActiveSlideId(
                         activeSlideId === 1 ? SLIDES.length : activeSlideId - 1)}
-                    className="bg-white/50 transition hover:bg-white-75
-                    text-black font-bold p-1.5 rounded-lg">
+                    className="bg-white/50 transition hover:bg-white-75 text-black font-bold p-1.5 rounded-lg">
                     <ChevronLeft size={20}/>
                 </button>
 
                 <button
                     onClick={() => setActiveSlideId(
                         activeSlideId === SLIDES.length ? 1 : activeSlideId + 1)}
-                    className="bg-white/50 transition hover:bg-white-75
-                    text-black font-bold p-1.5 rounded-lg">
+                    className="bg-white/50 transition hover:bg-white-75 text-black font-bold p-1.5 rounded-lg">
                     <ChevronRight size={20}/>
                 </button>
             </div>

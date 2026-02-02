@@ -1,16 +1,17 @@
 CREATE TABLE `account` (
 	`id` text PRIMARY KEY NOT NULL,
+	`account_id` text NOT NULL,
+	`provider_id` text NOT NULL,
 	`user_id` text NOT NULL,
-	`type` text NOT NULL,
-	`provider` text NOT NULL,
-	`provider_account_id` text NOT NULL,
-	`refresh_token` text,
 	`access_token` text,
-	`expires_at` integer,
-	`token_type` text,
-	`scope` text,
+	`refresh_token` text,
 	`id_token` text,
-	`session_state` text,
+	`access_token_expires_at` integer,
+	`refresh_token_expires_at` integer,
+	`scope` text,
+	`password` text,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
@@ -54,7 +55,7 @@ CREATE TABLE `review` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
 	`product_id` text NOT NULL,
-	`rating` real NOT NULL,
+	`rating` integer NOT NULL,
 	`comment` text,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
@@ -69,20 +70,28 @@ CREATE TABLE `session` (
 	`token` text NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
-	`user_agent` text,
 	`ip_address` text,
+	`user_agent` text,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `session_token_unique` ON `session` (`token`);--> statement-breakpoint
 CREATE TABLE `user` (
 	`id` text PRIMARY KEY NOT NULL,
-	`email` text NOT NULL,
 	`name` text,
+	`email` text NOT NULL,
 	`email_verified` integer DEFAULT false NOT NULL,
 	`image` text,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);
+CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);--> statement-breakpoint
+CREATE TABLE `verification` (
+	`id` text PRIMARY KEY NOT NULL,
+	`identifier` text NOT NULL,
+	`value` text NOT NULL,
+	`expires_at` integer NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL
+);
